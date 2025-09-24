@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { User } from "../models/User";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import { AuthRequest } from "../middlewares/auth";
 dotenv.config();
 
 const signToken = (id: string) =>
@@ -50,4 +51,15 @@ export const login = async (req: Request, res: Response) => {
   } catch (err) {
     res.status(500).json({ message: "Server error" });
   }
+};
+
+export const me = async (req: AuthRequest, res: Response) => {
+  if (!req.user) return res.status(401).json({ message: "Not authenticated" });
+  res.json({
+    _id: req.user._id,
+    name: req.user.name,
+    email: req.user.email,
+    role: req.user.role,
+    availability: req.user.availability,
+  });
 };
